@@ -1,14 +1,476 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <title>WebKit Test</title>
-</head>
-<body>
-    <h1>WebKit Test</h1>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PS5 WebKit Research</title>
 
-    <script>
-        alert("HI");
-    </script>
+<style>
+    * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+        font-family: Arial, Helvetica, sans-serif;
+    }
+
+    body {
+        min-height: 100vh;
+        background:
+            radial-gradient(circle at 20% 20%, #182b50 0%, transparent 35%),
+            radial-gradient(circle at 80% 80%, #10233e 0%, transparent 35%),
+            #05080f;
+        color: #fff;
+        display: flex;
+        justify-content: center;
+        padding: 40px 20px;
+    }
+
+    .container {
+        width: 100%;
+        max-width: 950px;
+    }
+
+    .header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 25px;
+    }
+
+    .brand {
+        display: flex;
+        align-items: center;
+        gap: 14px;
+    }
+
+    .logo {
+        width: 48px;
+        height: 48px;
+        border-radius: 14px;
+        background: linear-gradient(135deg, #0070ff, #00c8ff);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: bold;
+        font-size: 20px;
+        box-shadow: 0 0 25px rgba(0,150,255,.35);
+    }
+
+    h1 {
+        font-size: 24px;
+    }
+
+    .subtitle {
+        color: #7f8da6;
+        font-size: 13px;
+        margin-top: 4px;
+    }
+
+    .badge {
+        padding: 8px 13px;
+        border-radius: 20px;
+        background: rgba(0, 140, 255, .12);
+        border: 1px solid rgba(0, 160, 255, .25);
+        color: #35baff;
+        font-size: 12px;
+    }
+
+    .hero {
+        background: rgba(10, 17, 29, .88);
+        border: 1px solid #1c2b40;
+        border-radius: 20px;
+        padding: 28px;
+        box-shadow: 0 20px 70px rgba(0,0,0,.35);
+        backdrop-filter: blur(12px);
+    }
+
+    .hero-title {
+        font-size: 32px;
+        margin-bottom: 8px;
+    }
+
+    .hero-text {
+        color: #8492a9;
+        font-size: 14px;
+        line-height: 1.6;
+        max-width: 700px;
+    }
+
+    .grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 14px;
+        margin-top: 22px;
+    }
+
+    .card {
+        background: #0b121e;
+        border: 1px solid #1b293c;
+        border-radius: 15px;
+        padding: 18px;
+    }
+
+    .label {
+        color: #728098;
+        font-size: 11px;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+    }
+
+    .value {
+        margin-top: 8px;
+        font-size: 18px;
+        font-weight: bold;
+    }
+
+    .green {
+        color: #39e58c;
+    }
+
+    .blue {
+        color: #37aaff;
+    }
+
+    .orange {
+        color: #ffb84d;
+    }
+
+    .section {
+        margin-top: 20px;
+        background: #080f1a;
+        border: 1px solid #19273a;
+        border-radius: 16px;
+        padding: 20px;
+    }
+
+    .section-title {
+        font-size: 14px;
+        font-weight: bold;
+        margin-bottom: 15px;
+    }
+
+    .offset {
+        display: flex;
+        justify-content: space-between;
+        padding: 13px 0;
+        border-bottom: 1px solid #142033;
+        font-family: Consolas, monospace;
+        font-size: 13px;
+    }
+
+    .offset:last-child {
+        border-bottom: none;
+    }
+
+    .offset-name {
+        color: #8c9bb3;
+    }
+
+    .offset-value {
+        color: #43b9ff;
+    }
+
+    .button-area {
+        margin-top: 22px;
+        display: flex;
+        gap: 12px;
+        flex-wrap: wrap;
+    }
+
+    button {
+        border: none;
+        border-radius: 11px;
+        padding: 13px 20px;
+        font-size: 14px;
+        font-weight: bold;
+        cursor: pointer;
+        transition: .2s;
+    }
+
+    .primary {
+        background: linear-gradient(135deg, #0077ff, #00aaff);
+        color: white;
+        box-shadow: 0 8px 25px rgba(0,130,255,.25);
+    }
+
+    .primary:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 12px 30px rgba(0,130,255,.4);
+    }
+
+    .secondary {
+        background: #111b2a;
+        color: #a9b6ca;
+        border: 1px solid #24344b;
+    }
+
+    .progress-box {
+        display: none;
+        margin-top: 20px;
+    }
+
+    .progress {
+        height: 8px;
+        background: #121d2d;
+        border-radius: 10px;
+        overflow: hidden;
+    }
+
+    .progress-bar {
+        width: 0%;
+        height: 100%;
+        background: linear-gradient(90deg, #0077ff, #00d4ff);
+        transition: width .25s;
+    }
+
+    .log {
+        margin-top: 20px;
+        background: #03060b;
+        border: 1px solid #182337;
+        border-radius: 12px;
+        padding: 15px;
+        height: 180px;
+        overflow-y: auto;
+        font-family: Consolas, monospace;
+        font-size: 12px;
+        line-height: 1.8;
+        color: #7f91aa;
+    }
+
+    .log .ok {
+        color: #42e88f;
+    }
+
+    .log .info {
+        color: #4eb9ff;
+    }
+
+    .log .warn {
+        color: #ffc04d;
+    }
+
+    .footer {
+        text-align: center;
+        margin-top: 18px;
+        color: #56657c;
+        font-size: 11px;
+    }
+
+    @media(max-width: 700px) {
+        .grid {
+            grid-template-columns: 1fr;
+        }
+
+        .hero-title {
+            font-size: 25px;
+        }
+
+        .header {
+            align-items: flex-start;
+            gap: 15px;
+        }
+    }
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+    <div class="header">
+        <div class="brand">
+            <div class="logo">P5</div>
+            <div>
+                <h1>WebKit Research</h1>
+                <div class="subtitle">PS5 browser research environment</div>
+            </div>
+        </div>
+
+        <div class="badge">DEMO / RESEARCH</div>
+    </div>
+
+    <div class="hero">
+
+        <div class="hero-title">WebKit Environment</div>
+
+        <div class="hero-text">
+            Firmware-specific WebKit research interface.
+            This page is a visual testing environment and uses
+            simulated offsets for demonstration purposes.
+        </div>
+
+        <div class="grid">
+
+            <div class="card">
+                <div class="label">Firmware</div>
+                <div class="value blue">14.00</div>
+            </div>
+
+            <div class="card">
+                <div class="label">WebKit</div>
+                <div class="value green" id="webkitStatus">
+                    Ready
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="label">Environment</div>
+                <div class="value green">
+                    Online
+                </div>
+            </div>
+
+        </div>
+
+        <div class="section">
+
+            <div class="section-title">
+                Firmware Offsets
+            </div>
+
+            <div class="offset">
+                <span class="offset-name">webkitBase</span>
+                <span class="offset-value">0x00123456</span>
+            </div>
+
+            <div class="offset">
+                <span class="offset-name">targetFunction</span>
+                <span class="offset-value">0x00456789</span>
+            </div>
+
+            <div class="offset">
+                <span class="offset-name">gadget_01</span>
+                <span class="offset-value">0x006789AB</span>
+            </div>
+
+            <div class="offset">
+                <span class="offset-name">gadget_02</span>
+                <span class="offset-value">0x0089ABCD</span>
+            </div>
+
+            <div class="offset">
+                <span class="offset-name">kernelReference</span>
+                <span class="offset-value">0x00ABCDEF</span>
+            </div>
+
+        </div>
+
+        <div class="button-area">
+
+            <button class="primary" onclick="runTest()">
+                Test WebKit
+            </button>
+
+            <button class="secondary" onclick="clearLog()">
+                Clear Console
+            </button>
+
+        </div>
+
+        <div class="progress-box" id="progressBox">
+            <div class="label" style="margin-bottom:8px;">
+                Running test...
+            </div>
+
+            <div class="progress">
+                <div class="progress-bar" id="progressBar"></div>
+            </div>
+        </div>
+
+        <div class="log" id="console">
+            <div class="info">[INFO] WebKit Research initialized.</div>
+            <div>[INFO] Waiting for test...</div>
+        </div>
+
+    </div>
+
+    <div class="footer">
+        PS5 WebKit Research • Demonstration Interface • No real exploit functionality
+    </div>
+
+</div>
+
+<script>
+
+function addLog(message, type = "") {
+
+    const consoleBox = document.getElementById("console");
+
+    const line = document.createElement("div");
+
+    if (type)
+        line.className = type;
+
+    const time = new Date().toLocaleTimeString();
+
+    line.textContent = `[${time}] ${message}`;
+
+    consoleBox.appendChild(line);
+
+    consoleBox.scrollTop = consoleBox.scrollHeight;
+}
+
+function runTest() {
+
+    const progressBox = document.getElementById("progressBox");
+    const progressBar = document.getElementById("progressBar");
+    const status = document.getElementById("webkitStatus");
+
+    progressBox.style.display = "block";
+
+    progressBar.style.width = "0%";
+
+    status.textContent = "Testing...";
+    status.className = "value orange";
+
+    addLog("Starting WebKit test...", "info");
+
+    let progress = 0;
+
+    const interval = setInterval(() => {
+
+        progress += 10;
+
+        progressBar.style.width = progress + "%";
+
+        if (progress === 20)
+            addLog("Checking JavaScript execution...", "info");
+
+        if (progress === 40)
+            addLog("Loading simulated firmware offsets...", "info");
+
+        if (progress === 60)
+            addLog("Verifying demo environment...", "info");
+
+        if (progress === 80)
+            addLog("WebKit test stage reached.", "ok");
+
+        if (progress >= 100) {
+
+            clearInterval(interval);
+
+            status.textContent = "Ready";
+            status.className = "value green";
+
+            addLog("TEST SUCCESS — JavaScript executed.", "ok");
+
+            setTimeout(() => {
+                alert("HI\n\nWebKit test successful!");
+            }, 250);
+
+        }
+
+    }, 250);
+}
+
+function clearLog() {
+
+    document.getElementById("console").innerHTML =
+        '<div class="info">[INFO] Console cleared.</div>';
+
+}
+
+</script>
+
 </body>
 </html>
